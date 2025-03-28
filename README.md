@@ -26,7 +26,7 @@ The list will only show results if they have a high enough confidence (above `lo
 
 ![Screenshot 2025-03-27 153519](https://github.com/user-attachments/assets/da4ae7c5-08dc-4109-96e0-60a92bae7950)
 
-It skips the candidate-selection and tags the file automatically if the similarity (`selection-confidence`) of one of the result is high enough (per default any result with 80% or higher similarity).
+It skips the candidate-selection and tags the file automatically if the similarity (`selection-confidence`) of one of the result is high enough (per default any result with 80% or higher similarity). You can disable this behavior by setting `selection-confidence` to 1.0.
 
 If you want to use Discogs as a tag source, you need to authenticate the app first with your Discogs account. On first startup, a browser window will open the Discogs OAuth page. After authentication, please copy the code to your clipboard or enter it manually if you use the traditional UI.
 If you do not want to use Discogs, disable this source in the config file.
