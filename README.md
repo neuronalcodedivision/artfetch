@@ -21,7 +21,14 @@ artfetch /path/to/music/folder
 ```
 
 After starting the program, it will go through all the files in the specified folder and present a list of matches for each tagged mp3 file, file after file.
-In the list you can choose to view the source or the image of each candidate to make sure they are the correct match. The list will only show results if they have a high enough confidence (above `lower-confidence`). 
+In the list you can choose to view the source or the image of each candidate to make sure they are the correct match.
+The list will only show results if they have a high enough confidence (above `lower-confidence`). 
+![Screenshot 2025-03-27 153453](https://github.com/user-attachments/assets/8978b8e8-2441-459a-91d7-a24aa509b4a6)
+![Screenshot 2025-03-27 153519](https://github.com/user-attachments/assets/da4ae7c5-08dc-4109-96e0-60a92bae7950)
+
+
+
+
 It skips the selection list and tags the file automatically if the similarity (`selection-confidence`) of one of the result is high enough (per default any result with 80% or higher similarity)
 
 If you want to use Discogs as a tag source, you need to authenticate the app first with your Discogs account. On first startup, a browser window will open the Discogs OAuth page. After authentication, please copy the code to your clipboard or enter it manually if you use the traditional UI.
