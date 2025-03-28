@@ -13,7 +13,7 @@ from ..view import View
 API_KEY = "AFowAVXGvTYVUYuLZgWr"
 API_SECRET = "VFncIhOKUMSwIjoEdSxcCNXrLoHBZIHU"
 
-_discogs = None
+_discogs : discogs_client.Client = None
 
 def authorize_discogs(ui: View):
     from ..configuration import config
@@ -54,6 +54,7 @@ class Discogs(Source):
     global _discogs
     def __init__(self, tag):
         super().__init__(tag)
+        #if discogs has no api key
         if _discogs is None:
             return
         try:
@@ -99,6 +100,6 @@ class DiscogsCandidate(SourceCandidate):
             return
         self._confidence = _calc_similarities(similarities)
         # some release do not have an image attached
-        if (len(candidate.images) > 0):
+        if len(candidate.images) > 0:
             self._artwork_url = candidate.images[0].get("uri")
         self._info['url'] = candidate.url

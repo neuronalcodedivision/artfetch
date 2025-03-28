@@ -6,7 +6,6 @@ from . import user_agent, Source, SourceCandidate, _calc_similarities
 
 musicbrainzngs.set_useragent(user_agent, "0.1", "http://example.com/music")
 
-
 class MusicBrainz(Source):
     def __init__(self, tag):
         super().__init__(tag)
