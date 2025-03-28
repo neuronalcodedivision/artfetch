@@ -87,7 +87,7 @@ class View:
 
     def update_header(self, title):
         if self.is_live:
-            self._layout["header"].update(Panel(f'[{title}]', title="AutoTag", box=box.ROUNDED))
+            self._layout["header"].update(Panel(f'[{title}]', title="ArtFetch", box=box.ROUNDED))
         else:
             self._console.rule(f'[{title}]')
 
