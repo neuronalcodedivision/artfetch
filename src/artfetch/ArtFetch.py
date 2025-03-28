@@ -24,7 +24,6 @@ source_map = {
     'bandcamp': Bandcamp,
     'discogs': Discogs,
     'musicbrainz': MusicBrainz
-
 }
 
 
@@ -41,6 +40,8 @@ def main():
                         help="Process Files in Directory and all Subdirectories")
     parser.add_argument('-a', '--auto', default=False, action='store_true',
                         help="Omit user selection and always select the best match as album art source.")
+    parser.add_argument('-u', '--ui', default=False, action='store_true',
+                        help="Use the default view if your terminal does not support modern features like colors. Or if you prefer a scrolling interface.")
     config.read(user=True)
     # writes the default config to the config path if no config files exists
     write_config(config, False)
@@ -51,7 +52,7 @@ def main():
             'Failed to authenticate Discogs. Consider creating a new api key by deleting the existing one in the config.yaml file')
         return 0
     try:
-        with ui.start_display(config['rich-interface'].get(bool)):
+        with ui.start_display(config['rich-interface'].get(bool) or args.ui):
             process_directory(args, ui)
     finally:
         ui.stop_display()
