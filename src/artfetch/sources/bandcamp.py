@@ -31,19 +31,22 @@ class BandcampCandidate(SourceCandidate):
         self._info = {
             "artist": candidate['artist'],
             'track': candidate['name'],
-            'url': candidate['url']
+            'url': candidate['url'],
+            'album' : ''
         }
-        if candidate['type'] == 'track':
+        if candidate['type'] == 'track' and isinstance(candidate.get('album'), str):
             self._info['album'] = candidate.get('album')
-        else:
+        elif isinstance(candidate.get('title'), str):
             self._info['album'] = candidate.get('title')
-        if "album" in tag:
+        if "album" in tag and isinstance(self._info['album'], str):
             similarities.append(_get_similarity(str(tag.get('album')), self._info['album']))
-        if "artist" in tag:
-            similarities.append(_get_similarity(str(tag.get('artist')), candidate['artist']))
-        if "title" in tag:
-            similarities.append(_get_similarity(str(tag.get('title')), candidate['name']))
+        if "artist" in tag and isinstance(self._info['artist'], str):
+            similarities.append(_get_similarity(str(tag.get('artist')), self._info['artist']))
+        if "title" in tag and isinstance(self._info['track'], str):
+            similarities.append(_get_similarity(str(tag.get('title')), self._info['track']))
         guru = metaguru.Metaguru.from_html(http_get_text(candidate["url"]), _config)
         if guru.image:
             self._artwork_url = guru.image
-        self._confidence = _calc_similarities(similarities)
+        if len(similarities) > 0:
+            self._confidence = _calc_similarities(similarities)
+        else: self._confidence = 0
