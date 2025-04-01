@@ -17,9 +17,17 @@ _discogs : discogs_client.Client = None
 
 def authorize_discogs(ui: View):
     from ..configuration import config
+    #if discogs is enabled in the settings
     global _discogs
+    if not config['sources']['discogs'].get(bool):
+        return False
     if config['discogs-api-key'].get() is not None:
         return _login(config)
+    if ui.input("No discogs API-Key found. Do you want to use discogs? Y/N",['y','n']) == 'n':
+        config['sources']['discogs'] = False
+        ui.print('Discogs disabled. You can re-enable it in the config under sources.')
+        write_config(config, True)
+        return False
     ui.prompt("Discogs API-Key is not set, please authorize via O-Auth. Press Enter to continue", )
     _discogs = discogs_client.Client(
         'ArtAutoTag',
@@ -61,6 +69,7 @@ class Discogs(Source):
             for candidate in _discogs.search(artist=self._artist, title=self._album, track=self._title,
                                              type='release').page(1):
                 self._candidates.append(DiscogsCandidate(candidate, tag))
+
         except DiscogsAPIError as e:
             return
 
