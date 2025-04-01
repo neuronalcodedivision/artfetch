@@ -17,7 +17,7 @@ from .sources.discogs import Discogs, authorize_discogs
 from .sources.musicbrainz import MusicBrainz
 from .view import View
 
-app_name = "ArtFetch"
+app_name = "artfetch"
 version_number = "0.1"
 
 source_map = {
@@ -29,7 +29,7 @@ source_map = {
 
 def main():
     parser = argparse.ArgumentParser(
-        description=f""" {app_name}  /path/to/directory.""",
+        description=f""" {app_name}  /path/to/directory""",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         prog=f'{app_name}'
     )
@@ -42,18 +42,22 @@ def main():
                         help="Omit user selection and always select the best match as album art source.")
     parser.add_argument('-u', '--ui', default=False, action='store_true',
                         help="Use the default view if your terminal does not support modern features like colors. Or if you prefer a scrolling interface.")
+    parser.add_argument('-m', '--manual', default=False, action='store_true',
+                        help="Do not use auto selection, even if enabled in config file.")
     config.read(user=True)
     # writes the default config to the config path if no config files exists
     write_config(config, False)
     args = parser.parse_args()
-    ui = View(args.auto or config['auto']['enable'].get(bool))
-    if not authorize_discogs(ui):
-        ui.print_err(
-            'Failed to authenticate Discogs. Consider creating a new api key by deleting the existing one in the config.yaml file')
-        return 0
+    ui = View((args.auto or config['auto']['enable'].get(bool))and not args.manual)
+    authorize_discogs(ui)
     try:
-        with ui.start_display(config['rich-interface'].get(bool) or args.ui):
+        if config['rich-interface'].get(bool) or args.ui:
+            with ui.start_display():
+                process_directory(args, ui)
+
+        else:
             process_directory(args, ui)
+
     finally:
         ui.stop_display()
 
@@ -101,7 +105,6 @@ def iterate_over_directory(path: Path, args, ui, sources):
         audiofile = open_audio_file(file, ui)
         ui.print('')
         if audiofile is None:
-            ui.print_err(f"Unable to read file")
             continue
         tag = check_tag_compatibility(audiofile, args, ui)
         if tag is None:
@@ -118,7 +121,7 @@ def iterate_over_directory(path: Path, args, ui, sources):
             continue
         # autotagging selects the result with the highest confidence score
         selected_candidate = None
-        if args.auto or config['auto']['enable'].get(bool):
+        if (args.auto or config['auto']['enable'].get(bool))and not args.manual:
             candidate: SourceCandidate
             for candidate in all_candidates:
                 if candidate.get_artwork_url() is not None:
@@ -154,6 +157,8 @@ def iterate_over_directory(path: Path, args, ui, sources):
 def open_audio_file(file: Path, ui) -> mutagen.FileType or None:
     if not file.is_file():
         return None
+    if file.suffix.lower() != '.mp3':
+        return
     try:
         audiofile = mutagen.File(file)
     except MutagenError as e:
@@ -193,7 +198,7 @@ def check_tag_compatibility(audiofile, args, ui):
     tag = {}
     for frame in audiofile.tags.values():
         if isinstance(frame, APIC) and not (args.force or config['force'].get(bool)):
-            ui.print_success(f"[bold white]Skipping as album art exists")
+            ui.print(f"[bold white]Skipping as album art exists")
             return None
     if 'TALB' not in audiofile.tags and 'TIT2' not in audiofile.tags:
         return None
