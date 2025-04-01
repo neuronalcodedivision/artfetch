@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from rich import box
@@ -29,7 +28,8 @@ class View:
 
     # used for logging purposes
 
-    def prompt(self, message):
+    @staticmethod
+    def prompt(message):
         return Prompt.ask(message)
 
     def set_filename(self, file_name):
@@ -142,7 +142,7 @@ class View:
         else:
             if self.is_live:
                 self._layout["footer"].update(
-                    Panel(f'[green][{message}]', style='green', title_align='left', title="Sucess", box=box.ROUNDED))
+                    Panel(f'[green][{message}]', style='green', title_align='left', title="Success", box=box.ROUNDED))
             else:
                 self._console.print(f"[green]{message}")
 

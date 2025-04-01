@@ -2,7 +2,7 @@
 
 ## Description
 
-`artfetch` is primarily aimed at automatically adding tags and artwork to single mp3 files, based on existing tags. It's intended to process a whole directory and optionally its subfolders.
+`artfetch` is primarily aimed at automatically adding artwork to single mp3 files, based on existing tags. It's intended to process a whole directory and optionally its subfolders.
 
 ## Install
 

@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import os
 import webbrowser
 from pathlib import Path
 from typing import List
@@ -225,7 +224,7 @@ def selection_loop(all_candidates: List[SourceCandidate], tag, ui) -> SourceCand
                 ui.input(f'[bold white]show image of candidate #1-{len(all_candidates)}', indices_str)) - 1
             image = all_candidates[selected_option].get_artwork_image()
             if image is not None:
-                # twice the heigh as image is rendered in half characters
+                # twice the height as image is rendered in half characters
                 ui.show_image(image)
             else:
                 ui.print_err("[white] no image associated with this")

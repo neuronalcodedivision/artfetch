@@ -77,7 +77,7 @@ class SourceCandidate(ABC):
     def get_artwork_url(self):
         return self._artwork_url
 
-    # externalize this function so the image can be loaded by the main loop only on certain conditions, e.g confidence
+    # externalize this function so the image can be loaded by the main loop only on certain conditions, e.g. confidence
     async def pull_artwork(self):
         if self._artwork_url is not None:
             async with aiohttp.ClientSession() as session:

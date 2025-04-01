@@ -9,7 +9,7 @@ auto:
 selection-confidence: 0.8
 
 #throws out all results with a score lower to this
-lower-confidence: 0.2
+lower-confidence: 0.4
 
 #toggle all available sources
 sources:

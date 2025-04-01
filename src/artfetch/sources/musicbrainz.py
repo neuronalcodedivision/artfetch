@@ -33,7 +33,7 @@ class MusicBrainzCandidate(SourceCandidate):
             self._info['track'] = candidate["title"]
         except (KeyError, IndexError):
             return
-        # Musicbrainz returns arists or track title which do not match at all, so we sort those out
+        # Musicbrainz returns artists or track title which do not match at all, so we sort those out
         self._confidence = _calc_similarities(similarities)
         # build the artwork ref link which returns the url to the artwork
         release_id = candidate['release-list'][0]['id']
