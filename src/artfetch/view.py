@@ -11,11 +11,8 @@ from rich.prompt import Prompt
 from rich.spinner import Spinner
 from rich.table import Table
 from rich_pixels import Pixels
+import readchar
 
-if os.name == 'nt':
-    import msvcrt
-else:
-    __import__('getch')
 
 
 class View:
@@ -27,16 +24,8 @@ class View:
         self._console = Console()
         self._file_name = ''
         self._layout = Layout(name="root")
-        self._layout.split(
-            Layout(name="header", size=3),
-            Layout(name="body", ratio=1),
-            Layout(name="footer", size=3)
-        )
-        self._live = Live(self._layout, auto_refresh=True, transient=False, screen=True,
-                          # Takes over the whole screen
-                          redirect_stdout=False, vertical_overflow="visible")
-        self._layout['body'].update('')
-        self._layout['footer'].update('')
+        self._live = None
+
 
     # used for logging purposes
 
@@ -51,22 +40,27 @@ class View:
             self._layout["footer"].update(
                 Panel(f'[blink]{message}', title="Input", title_align='left', style='slate_blue3', box=box.ROUNDED), )
             while True:
-                if msvcrt.kbhit():
-                    try:
-                        key = msvcrt.getch().lower().decode('utf-8')
-                        for match in options:
-                            if match == key:
-                                return key
-                    except UnicodeDecodeError as e:
-                        pass
+                key = readchar.readkey()
+                if key in options:
+                    return key
 
         else:
             return Prompt.ask(
                 message,
                 default=1, choices=options, show_choices=False)
 
-    def start_display(self, is_live):
-        self.is_live = is_live
+    def start_display(self):
+        self._layout.split(
+            Layout(name="header", size=3),
+            Layout(name="body", ratio=1),
+            Layout(name="footer", size=3)
+        )
+        self._live = Live(self._layout, auto_refresh=True, transient=False, screen=True,
+                          # Takes over the whole screen
+                          redirect_stdout=False, vertical_overflow="visible")
+        self._layout['body'].update('')
+        self._layout['footer'].update('')
+        self.is_live = True
         self._live.start()
         return self._live
 
@@ -112,7 +106,10 @@ class View:
             table.add_row(f"{index + 1}", image, info["artist"], info['track'], info['album'],
                           f"{round(candidate.get_confidence() * 100, 1)}%",
                           f"{candidate.get_source_type()}", f"{info['url']}")
-        self._layout["body"].update(table)
+        if self.is_live:
+            self._layout["body"].update(table)
+        else:
+            self._console.print(table)
 
     def print(self, message):
         if not self._auto_enabled:
@@ -156,5 +153,5 @@ class View:
                       padding=(0, 0, 0, 0), box=box.SIMPLE))
             self.print('Press any key to continue ..')
             while True:
-                if msvcrt.kbhit():
+                if readchar.readkey():
                     return
