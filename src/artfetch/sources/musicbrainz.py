@@ -36,13 +36,15 @@ class MusicBrainzCandidate(SourceCandidate):
         # Musicbrainz returns arists or track title which do not match at all, so we sort those out
         self._confidence = _calc_similarities(similarities)
         # build the artwork ref link which returns the url to the artwork
-        artwork = requests.get(f'https://coverartarchive.org/release/{candidate['release-list'][0]['id']}/front',
+        release_id = candidate['release-list'][0]['id']
+        artwork = requests.get(f'https://coverartarchive.org/release/{release_id}/front',
                                allow_redirects=False)
         if artwork.status_code == 307:
             self._artwork_url = artwork.headers['Location']
         else:
             self._artwork_url = None
-        self._info['url'] = f"https://musicbrainz.org/recording/{candidate['id']}"
+        candidate_id = candidate['id']
+        self._info['url'] = f"https://musicbrainz.org/recording/{candidate_id}"
 
     def get_confidence(self):
         return self._confidence
